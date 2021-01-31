@@ -114,6 +114,8 @@ cdef extern from "include_and_setting.h" namespace "octomap":
         bool deleteNode(point3d& value, unsigned int depth)
         bool castRay(point3d& origin, point3d& direction, point3d& end,
                      bool ignoreUnknownCells, double maxRange)
+        void castRays(int num_rays, double *origins, double *directions, double *ends, unsigned char *hits,
+                     bool ignoreUnknownCells, double maxRange)
         OcTree* read(string& filename)
         OcTree* read(istream& s)
         bool write(string& filename)

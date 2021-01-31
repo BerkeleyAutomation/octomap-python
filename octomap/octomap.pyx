@@ -418,6 +418,35 @@ cdef class OcTree:
             end[0:3] = e.x(), e.y(), e.z()
         return hit
 
+    def castRays(self, np.ndarray[DOUBLE_t, ndim=2] origins,
+                np.ndarray[DOUBLE_t, ndim=2] directions,
+                np.ndarray[DOUBLE_t, ndim=2] ends,
+                ignoreUnknownCells=False,
+                maxRange=-1.0):
+        """
+        """
+        # Check contiguous.
+        if not origins.flags['C_CONTIGUOUS']:
+            origins = np.ascontiguousarray(origins)
+        if not directions.flags['C_CONTIGUOUS']:
+            directions = np.ascontiguousarray(directions)
+        if not ends.flags['C_CONTIGUOUS']:
+            ends = np.ascontiguousarray(ends)
+
+        cdef np.ndarray[np.uint8_t, ndim=1, cast=True] hits
+        hits = np.zeros((origins.shape[0],), dtype=np.uint8)
+
+        self.thisptr.castRays(
+            int(origins.shape[0]),
+            &origins[0, 0],
+            &directions[0, 0],
+            &ends[0, 0],
+            &hits[0],
+            bool(ignoreUnknownCells),
+            <double?>maxRange
+        )
+        return hits.astype(np.bool, copy=False)
+
     read = _octree_read
 
     def write(self, filename=None):
